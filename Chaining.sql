@@ -1,0 +1,106 @@
+USE master;
+GO
+
+IF DATABASEPROPERTYEX('Chaining', 'Status') IS NOT NULL
+BEGIN
+	ALTER DATABASE Chaining SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE Chaining;
+END
+GO
+
+IF(SELECT COUNT(*) FROM sys.server_principals WHERE name = 'UserA') > 0 DROP LOGIN UserA;
+IF(SELECT COUNT(*) FROM sys.server_principals WHERE name = 'UserB') > 0 DROP LOGIN UserB;
+IF(SELECT COUNT(*) FROM sys.server_principals WHERE name = 'UserC') > 0 DROP LOGIN UserC;
+GO
+
+CREATE DATABASE Chaining;
+GO
+
+ALTER DATABASE Chaining SET RECOVERY SIMPLE;
+GO
+
+USE Chaining;
+GO
+
+CREATE LOGIN UserA WITH PASSWORD = '9023f92jf@#F@#23m';
+GO
+
+CREATE USER UserA FOR LOGIN UserA;
+GO
+
+CREATE LOGIN UserB WITH PASSWORD = '9023f92jf@#F@#23m';
+GO
+
+CREATE USER UserB FOR LOGIN UserB;
+GO
+
+CREATE SCHEMA Schema_A;
+GO
+
+ALTER AUTHORIZATION ON SCHEMA::Schema_A TO UserA;
+GO
+
+CREATE SCHEMA Schema_B;
+GO
+
+ALTER AUTHORIZATION ON SCHEMA::Schema_B TO UserB;
+GO
+
+CREATE TABLE Schema_A.TableA (Id int IDENTITY, A int, B char(10));
+GO
+
+INSERT INTO Schema_A.TableA SELECT 100*RAND(), 'Hello';
+INSERT INTO Schema_A.TableA SELECT 100*RAND(), 'There';
+INSERT INTO Schema_A.TableA SELECT 100*RAND(), 'Hello';
+INSERT INTO Schema_A.TableA SELECT 100*RAND(), 'World';
+GO
+
+CREATE TABLE Schema_B.TableB (Id int IDENTITY, A int, B char(10));
+GO
+
+INSERT INTO Schema_B.TableB SELECT 100*RAND(), 'Hello';
+INSERT INTO Schema_B.TableB SELECT 100*RAND(), 'There';
+INSERT INTO Schema_B.TableB SELECT 100*RAND(), 'Hello';
+INSERT INTO Schema_B.TableB SELECT 100*RAND(), 'World';
+GO
+
+CREATE PROCEDURE Schema_B.ProcedureB
+AS
+SELECT Id, A, B FROM Schema_A.TableA
+UNION ALL
+SELECT Id, A, B FROM Schema_B.TableB;
+GO
+
+CREATE LOGIN UserC WITH PASSWORD = '9023f92jf@#F@#23m';
+GO
+
+CREATE USER UserC FOR LOGIN UserC;
+GO
+
+GRANT EXECUTE ON Schema_B.ProcedureB to UserC;
+GO
+
+GRANT SELECT ON Schema_A.TableA to UserC;
+GO
+
+EXECUTE AS user ='UserC'
+GO
+
+SELECT CURRENT_USER;
+GO
+
+Schema_B.ProcedureB;
+GO
+
+REVERT
+GO
+
+USE master;
+GO
+
+IF DATABASEPROPERTYEX('Chaining', 'Status') IS NOT NULL
+BEGIN
+	ALTER DATABASE Chaining SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE Chaining;
+END
+GO
