@@ -1,0 +1,12 @@
+ALTER SERVER CONFIGURATION
+SET BUFFER POOL EXTENSION
+ON ( FILENAME = 'C:\_DATA\Example.bpe', SIZE = 40GB)
+GO
+
+SELECT * FROM sys.dm_os_buffer_pool_extension_configuration
+SELECT * FROM sys.dm_os_buffer_descriptors
+GO
+
+ALTER SERVER CONFIGURATION
+SET BUFFER POOL EXTENSION OFF
+GO
