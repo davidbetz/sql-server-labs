@@ -1,6 +1,8 @@
 # SQL Server 2012 / 2014+ Lab Files
 
-I created these files over years of polishing my SQL Server skills for certification exams (including the Microsoft Certified Solutions Master (MCSA) [which was cancelled](https://www.microsoft.com/en-us/learning/mcsm-certification.aspx) in the middle of my skill-polishing -- yeah, that upset me!)
+Here are are files I created over years of polishing my SQL Server skills for certification exams (MCSE at the time; MCSA, [which was cancelled](https://www.microsoft.com/en-us/learning/mcsm-certification.aspx) in the middle of my skill-polishing).
+
+For the most part, each file is a different topic. Some are tiny and simple, some are huge and elaborate.
 
 I'll add more labs as I continue to use SQL Server (and polish files I find randomly laying around my hard drives).
 
